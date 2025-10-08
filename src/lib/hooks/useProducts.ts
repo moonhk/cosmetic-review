@@ -1,11 +1,18 @@
-import { useQuery } from "@tanstack/react-query";
-import { getProducts } from "@/lib/api/products";
+import { useQuery, UseQueryResult } from "@tanstack/react-query";
+import { Product } from "@/lib/types/product";
+import { API_ENDPOINTS } from "@/lib/config/api";
+import { fetchFromClientAPI, QUERY_OPTIONS } from "@/lib/api/client";
 
-export function useProducts() {
+// Query Key
+export const PRODUCTS_QUERY_KEY = ["products"] as const;
+
+/**
+ * 모든 상품 목록 조회 Hook
+ */
+export function useProducts(): UseQueryResult<Product[], Error> {
   return useQuery({
-    queryKey: ["products"],
-    queryFn: getProducts,
-    staleTime: 5 * 60 * 1000, // 5분
-    gcTime: 10 * 60 * 1000, // 10분
+    queryKey: PRODUCTS_QUERY_KEY,
+    queryFn: () => fetchFromClientAPI<Product[]>(API_ENDPOINTS.PRODUCTS),
+    ...QUERY_OPTIONS,
   });
 }

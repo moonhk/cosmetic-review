@@ -1,7 +1,6 @@
 import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
 import getQueryClient from "@/lib/getQueryClient";
 import { getProducts } from "@/lib/api/products";
-import ProductList from "@/components/ProductList";
 import { TypographyH1, TypographyLead } from "@/components/ui/typography";
 import HomeContainer from "@/containers/HomeContainer";
 

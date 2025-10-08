@@ -1,3 +1,5 @@
+"use server";
+
 import { QueryClient } from "@tanstack/react-query";
 import { cache } from "react";
 import { queryClientConfig } from "./queryClient.config";
