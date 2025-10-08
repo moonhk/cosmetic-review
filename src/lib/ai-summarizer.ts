@@ -42,16 +42,12 @@ export async function summarizeMultipleReviews(
   try {
     const aiProvider = process.env.AI_PROVIDER || "groq"; // 기본값: groq
 
-    // 각 리뷰를 병렬로 요약
     const summaryPromises = reviews.map((review) => {
-      if (aiProvider === "ollama") {
-        return summarizeWithOllama(review);
-      } else {
-        return summarizeWithGroq(review);
-      }
+      return summarizeWithGroq(review);
     });
 
     const summaries = await Promise.all(summaryPromises);
+
     return summaries;
   } catch (error) {
     console.error("Error summarizing reviews:", error);
@@ -67,7 +63,6 @@ export async function summarizeMultipleReviews(
 async function summarizeWithGroq(
   input: VideoSummaryInput
 ): Promise<VideoSummaryOutput> {
-  console.log("summarizeWithGroq");
   const apiKey = process.env.GROQ_API_KEY;
 
   if (!apiKey) {
@@ -121,6 +116,14 @@ async function summarizeWithGroq(
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       console.error("Groq API error:", response.status, errorData);
+
+      // Rate Limit 초과 시 친절한 에러 메시지
+      if (response.status === 429) {
+        return {
+          summary: "AI 요청 한도를 초과했습니다. 잠시 후 다시 시도해주세요.",
+        };
+      }
+
       throw new Error(`Groq API error: ${response.status}`);
     }
 
@@ -132,61 +135,6 @@ async function summarizeWithGroq(
     console.error("Error with Groq:", error);
     return {
       summary: `${input.brandName} ${input.productName}에 대한 리뷰입니다. ${input.title}`,
-    };
-  }
-}
-
-/**
- * Ollama 로컬 모델을 사용한 리뷰 요약 (로컬 개발용)
- */
-async function summarizeWithOllama(
-  input: VideoSummaryInput
-): Promise<VideoSummaryOutput> {
-  const ollamaUrl = process.env.OLLAMA_BASE_URL || "http://localhost:11434";
-
-  try {
-    const prompt = `제품: ${input.brandName} ${input.productName}
-리뷰 제목: ${input.title}
-리뷰 설명: ${input.description}
-
-위 리뷰를 분석하여 다음 형식으로 답변하세요:
-
-요약: [50자 이내로 핵심 내용을 간결하게 요약]
-장점: [간결한 뉴스 스타일로 핵심만. 예: 보습력 우수, 흡수력 탁월]
-단점: [간결한 뉴스 스타일로 핵심만. 예: 가격대 높음, 향 강함]
-추천: [리뷰어 말투로 자연스럽게. 예: 써보니까 정말 좋더라구요, 완전 추천해요]
-
-장점/단점이 없으면 해당 항목은 생략하세요.`;
-
-    const response = await fetch(`${ollamaUrl}/api/generate`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "gemma2:2b", // 또는 'llama3.2:3b', 'qwen2.5:3b'
-        prompt: prompt,
-        stream: false,
-        options: {
-          temperature: 0.7,
-          num_predict: 300,
-        },
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error(`Ollama API error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    const text = data.response?.trim() || "";
-
-    return extractJsonFromText(text);
-  } catch (error) {
-    console.error("Error with Ollama:", error);
-    return {
-      summary:
-        "로컬 AI 모델에 연결할 수 없습니다. Ollama가 실행 중인지 확인하세요.",
     };
   }
 }

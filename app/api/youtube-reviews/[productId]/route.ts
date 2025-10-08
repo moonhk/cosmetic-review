@@ -3,6 +3,7 @@ import { searchProductReviews } from "@/lib/youtube";
 import { summarizeMultipleReviews } from "@/lib/ai-summarizer";
 import { YoutubeReview } from "@/lib/types/product";
 import { mockProducts } from "@/lib/data/mockProducts";
+import reviewCache from "@/lib/cache";
 
 type Props = {
   params: Promise<{ productId: string }>;
@@ -11,6 +12,29 @@ type Props = {
 export async function GET(request: NextRequest, { params }: Props) {
   try {
     const { productId } = await params;
+
+    // 캐시 확인
+    const cacheKey = `reviews_${productId}`;
+    const cachedData = reviewCache.get<{
+      productId: string;
+      productName: string;
+      brandName: string;
+      reviews: YoutubeReview[];
+      totalCount: number;
+      cached: boolean;
+      cachedAt: string;
+    }>(cacheKey);
+
+    if (cachedData) {
+      console.log(`[Cache HIT] Product ${productId} - returning cached data`);
+      return NextResponse.json({
+        ...cachedData,
+        cached: true,
+        cachedAt: cachedData.cachedAt,
+      });
+    }
+
+    console.log(`[Cache MISS] Product ${productId} - fetching new data`);
 
     // 제품 정보 찾기
     const product = mockProducts.find((p) => p.id === productId);
@@ -64,13 +88,24 @@ export async function GET(request: NextRequest, { params }: Props) {
       };
     });
 
-    return NextResponse.json({
+    const responseData = {
       productId,
       productName: product.name,
       brandName: product.brand,
       reviews,
       totalCount: reviews.length,
-    });
+      cached: false,
+      cachedAt: new Date().toISOString(),
+    };
+
+    // 캐시에 저장 (TTL: 1시간)
+    const cacheTTL = parseInt(process.env.CACHE_TTL || "3600", 10); // 기본 1시간
+    reviewCache.set(cacheKey, responseData, cacheTTL);
+    console.log(
+      `[Cache SET] Product ${productId} - cached for ${cacheTTL} seconds`
+    );
+
+    return NextResponse.json(responseData);
   } catch (error) {
     console.error("Error fetching YouTube reviews:", error);
     return NextResponse.json(
