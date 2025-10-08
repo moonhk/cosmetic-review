@@ -58,5 +58,6 @@ export function useBookmarks() {
     isBookmarked,
     bookmarkCount,
     isLoaded,
+    bookmarkedIds, // 북마크된 ID Set 반환
   };
 }

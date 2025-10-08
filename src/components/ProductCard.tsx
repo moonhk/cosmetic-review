@@ -88,8 +88,8 @@ export default function ProductCard({
         >
           <Heart
             className={cn(
-              "mr-2 h-4 w-4 transition-colors",
-              isBookmarked && "fill-red-500 text-red-500"
+              "mr-2 h-4 w-4 transition-all",
+              isBookmarked && "fill-current"
             )}
           />
           {isBookmarked ? "북마크됨" : "북마크"}
