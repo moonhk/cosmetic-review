@@ -1,6 +1,7 @@
 import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
 import getQueryClient from "@/lib/getQueryClient";
 import { getProducts } from "@/lib/api/products";
+import { PRODUCTS_QUERY_KEY } from "@/lib/hooks/useProducts";
 import { TypographyH1, TypographyLead } from "@/components/ui/typography";
 import HomeContainer from "@/containers/HomeContainer";
 
@@ -9,7 +10,7 @@ export default async function Home() {
 
   // 서버에서 데이터 prefetch
   await queryClient.prefetchQuery({
-    queryKey: ["products"],
+    queryKey: PRODUCTS_QUERY_KEY,
     queryFn: getProducts,
   });
 

@@ -7,4 +7,19 @@ export interface Product {
   imageUrl: string;
   rank: number;
   rating: number;
+  description?: string;
+}
+
+export interface YoutubeReview {
+  id: string;
+  videoId: string;
+  title: string;
+  channelName: string;
+  thumbnailUrl: string;
+  viewCount: number;
+  publishedAt: string;
+  summary: string;
+  pros?: string[];
+  cons?: string[];
+  recommendation?: string;
 }
