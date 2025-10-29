@@ -11,7 +11,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export type HomeContainerProps = {};
+export type HomeContainerProps = Record<string, never>;
 
 const HomeContainer: FC<HomeContainerProps> = () => {
   const { data: products, isLoading, error, refetch } = useProducts();

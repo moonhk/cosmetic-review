@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import Link from "next/link";
-import { Heart, ShoppingBag } from "lucide-react";
+import { Heart } from "lucide-react";
 import { useProducts } from "@/lib/hooks/useProducts";
 import { useBookmarks } from "@/lib/hooks/useBookmarks";
 import ProductCard from "@/components/ProductCard";

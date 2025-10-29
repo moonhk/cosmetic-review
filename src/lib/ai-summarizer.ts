@@ -40,8 +40,6 @@ export async function summarizeMultipleReviews(
   reviews: ReviewInput[]
 ): Promise<ReviewSummary[]> {
   try {
-    const aiProvider = process.env.AI_PROVIDER || "groq"; // 기본값: groq
-
     const summaryPromises = reviews.map((review) => {
       return summarizeWithGroq(review);
     });
