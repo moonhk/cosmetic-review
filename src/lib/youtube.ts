@@ -54,7 +54,9 @@ export async function searchProductReviews(
     }
 
     // 비디오 ID 수집
-    const videoIds = searchData.items.map((item: any) => item.id.videoId);
+    const videoIds = searchData.items.map(
+      (item: { id: { videoId: string } }) => item.id.videoId
+    );
 
     // YouTube Data API v3 - Videos (통계 정보 가져오기)
     const videoIds_string = videoIds.join(",");
@@ -69,22 +71,42 @@ export async function searchProductReviews(
     const videosData = await videosResponse.json();
 
     // 결과 매핑
-    const videos: YouTubeVideo[] = videosData.items.map((item: any) => ({
-      videoId: item.id,
-      title: item.snippet.title,
-      description: item.snippet.description,
-      channelTitle: item.snippet.channelTitle,
-      thumbnailUrl:
-        item.snippet.thumbnails.high?.url ||
-        item.snippet.thumbnails.medium?.url ||
-        item.snippet.thumbnails.default?.url,
-      publishedAt: item.snippet.publishedAt,
-      statistics: {
-        viewCount: item.statistics.viewCount || "0",
-        likeCount: item.statistics.likeCount || "0",
-        commentCount: item.statistics.commentCount || "0",
-      },
-    }));
+    const videos: YouTubeVideo[] = videosData.items.map(
+      (item: {
+        id: string;
+        snippet: {
+          title: string;
+          description: string;
+          channelTitle: string;
+          thumbnails: {
+            high?: { url: string };
+            medium?: { url: string };
+            default?: { url: string };
+          };
+          publishedAt: string;
+        };
+        statistics: {
+          viewCount?: string;
+          likeCount?: string;
+          commentCount?: string;
+        };
+      }) => ({
+        videoId: item.id,
+        title: item.snippet.title,
+        description: item.snippet.description,
+        channelTitle: item.snippet.channelTitle,
+        thumbnailUrl:
+          item.snippet.thumbnails.high?.url ||
+          item.snippet.thumbnails.medium?.url ||
+          item.snippet.thumbnails.default?.url,
+        publishedAt: item.snippet.publishedAt,
+        statistics: {
+          viewCount: item.statistics.viewCount || "0",
+          likeCount: item.statistics.likeCount || "0",
+          commentCount: item.statistics.commentCount || "0",
+        },
+      })
+    );
 
     return videos;
   } catch (error) {
