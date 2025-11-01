@@ -1,59 +1,29 @@
 "use client";
 
-import { useProducts } from "@/lib/hooks/useProducts";
-import { useBookmarks } from "@/lib/hooks/useBookmarks";
+import { useProducts } from "@/hooks/useProducts";
+import { useBookmarks } from "@/hooks/useBookmarks";
 import type { FC } from "react";
 
-import ProductList from "@/components/ProductList";
-import { Empty, EmptyDescription, EmptyTitle } from "@/components/ui/empty";
-import ProductCardSkeleton from "@/components/ProductCardSkeleton";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import ProductList from "@/components/features/products/ProductList";
+import { EmptyProductsState } from "@/components/shared";
 
 export type HomeContainerProps = Record<string, never>;
 
 const HomeContainer: FC<HomeContainerProps> = () => {
-  const { data: products, isLoading, error, refetch } = useProducts();
+  const { data: products } = useProducts();
   const { toggleBookmark, isBookmarked } = useBookmarks();
 
-  // Loading State - 첫 로딩이 아닌 경우에만 (서버에서 prefetch된 데이터가 없을 때)
-  // 보통은 서버에서 prefetch하므로 이 부분은 잘 실행되지 않음
-  if (isLoading) {
+  // useSuspenseQuery를 사용하므로 products는 항상 존재 (타입 가드 불필요)
+  // Empty State만 체크
+  if (products.length === 0) {
     return (
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-        {[...Array(8)].map((_, i) => (
-          <ProductCardSkeleton key={i} />
-        ))}
-      </div>
-    );
-  }
-
-  // Error State - 클라이언트에서 리페칭 중 에러 발생
-  if (error) {
-    return (
-      <div className="space-y-4">
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertTitle>데이터를 불러오는 중 에러가 발생했습니다</AlertTitle>
-          <AlertDescription>{error.message}</AlertDescription>
-        </Alert>
-        <Button onClick={() => refetch()} variant="outline">
-          다시 시도
-        </Button>
-      </div>
-    );
-  }
-
-  // Empty State
-  if (!products || products.length === 0) {
-    return (
-      <Empty>
-        <EmptyTitle>상품이 없습니다</EmptyTitle>
-        <EmptyDescription>
-          현재 표시할 상품이 없습니다. 나중에 다시 확인해주세요.
-        </EmptyDescription>
-      </Empty>
+      <EmptyProductsState
+        emoji="📦"
+        title="상품이 없습니다"
+        description="현재 표시할 상품이 없습니다. 나중에 다시 확인해주세요."
+        actionText="새로고침"
+        actionHref="/"
+      />
     );
   }
 
