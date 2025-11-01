@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { searchProductReviews } from "@/lib/youtube";
-import { summarizeMultipleReviews } from "@/lib/ai-summarizer";
-import { YoutubeReview } from "@/lib/types/product";
-import { mockProducts } from "@/lib/data/mockProducts";
-import reviewCache from "@/lib/cache";
+import { searchProductReviews } from "@/services/youtube";
+import { summarizeMultipleReviews } from "@/services/ai-summarizer";
+import { YoutubeReview } from "@/types/product";
+import { mockProducts } from "@/data/mockProducts";
+import reviewCache from "@/services/cache";
 
 type Props = {
   params: Promise<{ productId: string }>;

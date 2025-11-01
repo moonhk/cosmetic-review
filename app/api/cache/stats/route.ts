@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import reviewCache from "@/lib/cache";
+import reviewCache from "@/services/cache";
 
 /**
  * 캐시 통계 확인 API

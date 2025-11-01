@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { mockProducts } from "@/lib/data/mockProducts";
+import { mockProducts } from "@/data/mockProducts";
 
 type Props = {
   params: Promise<{ id: string }>;
