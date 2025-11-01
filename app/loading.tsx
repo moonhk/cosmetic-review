@@ -1,4 +1,4 @@
-import ProductCardSkeleton from "@/components/ProductCardSkeleton";
+import ProductCardSkeleton from "@/components/features/products/ProductCardSkeleton";
 import { TypographyH1, TypographyLead } from "@/components/ui/typography";
 
 export default function Loading() {
