@@ -1,6 +1,8 @@
 # 🧴 Cosmetic Review - AI 기반 화장품 리뷰 플랫폼
 
-올리브영 인기 화장품 제품의 YouTube 리뷰를 AI로 자동 분석하고 요약해주는 웹 애플리케이션입니다.
+올리브영 인기 화장품 제품의 YouTube 리뷰를 AI로 자동 분석하고 요약해주는 웹 애플리케이션입니다. <br>
+
+## 사이트 주소
 Domain: https://cosmetic-review-ix14.vercel.app/
 
 ## 📋 프로젝트 개요
